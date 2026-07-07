@@ -1,0 +1,34 @@
+---
+description: GDScript 编码规范，编辑 .gd 文件时自动应用
+globs:
+  - "**/*.gd"
+alwaysApply: false
+---
+
+# GDScript 风格
+
+完整规范见 `docs/tech/code-style.md`。编写或修改 `.gd` 时必须遵守：
+
+- 函数参数与返回值必须带类型（含 `-> void`）；成员变量尽量标注类型。
+- 命名：`snake_case` 函数/变量，`PascalCase` 的 `class_name`，`UPPER_SNAKE_CASE` 常量，私有成员 `_` 前缀。
+- 文件顺序：`extends`/`class_name` → const → `@onready` → `@export` → 变量 → signal → 生命周期 → 公开方法 → 私有方法 → `_on_*` → `static`。
+- 用 `@onready` + `%UniqueName` 缓存节点，禁止在 `_process` 里 `get_node`。
+- 集合写 `Array[T]`、`Dictionary[K,V]`；对象判空用 `== null`，数组用 `is_empty()`。
+- 玩法差异走 `resources/` 配置；纯逻辑放 `scripts/systems/`；场景/预制体脚本与 `.tscn` 同目录。
+- 跨模块通信用信号或 EventBus，避免 `get_parent().get_parent()` 与循环引用。
+- 注释只解释「为什么」；标识符用英文，用户文案走本地化。
+- 缩进用 Tab；避免巨型 `_process`，同屏实体考虑对象池。
+
+```gdscript
+# ✅
+func try_purchase(item_id: String) -> bool:
+	if _tokens < _get_price(item_id):
+		return false
+	return true
+
+# ❌
+func try_purchase(item_id):
+	if not _tokens >= _get_price(item_id): return false
+```
+
+禁区见 `docs/tech/bad-patterns.md`。
